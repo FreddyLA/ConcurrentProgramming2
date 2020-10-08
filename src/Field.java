@@ -6,18 +6,25 @@
 
 public class Field {
 
-    public Field() {
+    private Semaphore[][] semaphore;
 
+    public Field() {
+        semaphore = new Semaphore[Layout.ROWS][Layout.COLS];
+
+        for (int i = 0; i < Layout.ROWS; i++){
+            for (int j = 0; j < Layout.COLS; j++) {
+                semaphore[i][j] = new Semaphore(1);
+            }
+        }
     }
 
     /* Block until car no. may safely enter tile at pos */
     public void enter(int no, Pos pos) throws InterruptedException {
-
+        semaphore[pos.row][pos.col].P();
     }
 
     /* Release tile at position pos */
     public void leave(Pos pos) {
-
+        semaphore[pos.row][pos.col].V();
     }
-
 }

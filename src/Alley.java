@@ -7,6 +7,7 @@
 public class Alley {
 
     Semaphore mutex;
+    int car;
 
     public Alley() {
         mutex = new Semaphore(1);
@@ -14,22 +15,29 @@ public class Alley {
 
     /* Determine whether pos is right before alley is entered */
     public boolean atEntry(Pos pos) {
-        return false;
+        return atExitOrEntrance(pos);
     }
 
     /* Determine whether pos is right after alley is left */
     public boolean atExit(Pos pos) {
-        return false;
+        return atExitOrEntrance(pos);
     }
 
     /* Block until car no. may enter alley */
     public void enter(int no) throws InterruptedException {
         mutex.P();
+        car = no;
     }
 
     /* Register that car no. has left the alley */
     public void leave(int no) {
-        mutex.V();
+        if(no == car) {
+            mutex.V();
+        }
     }
 
+    public boolean atExitOrEntrance(Pos pos){
+        return (pos.row == 9 && pos.col == 1) || (pos.row == 10 && pos.col == 1) || (pos.row == 0 && pos.col == 0)
+                    || (pos.row == 1 && pos.col == 1) || (pos.row == 2 && pos.col == 1);
+    }
 }

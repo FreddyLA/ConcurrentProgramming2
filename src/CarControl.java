@@ -119,13 +119,19 @@ class Conductor extends Thread {
 
                 newpos = nextPos(curpos);
 
-                if (alley.atEntry(curpos)) alley.enter(no);
+                if (alley.atEntry(curpos)) {
+                    System.out.println("here" + no);
+                    alley.enter(no);
+                }
                 field.enter(no, newpos);
 
                 car.driveTo(newpos);
 
                 field.leave(curpos);
-                if (alley.atExit(newpos)) alley.leave(no);
+                if (alley.atExit(newpos)) {
+                    alley.leave(no);
+                    System.out.println("here2" + no);
+                }
 
                 curpos = newpos;
             }
