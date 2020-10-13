@@ -10,6 +10,25 @@ int nCounterClockwise = 0;
 int dClockwise = 0;
 int dCounterClockwise = 0;
 
+
+inline Signal() {
+	if
+	:: nClockwise == 0 && dCounterClockwise > 0 ->  dCounterClockwise--;
+													V(counterClockwise)
+	:: nCounterClockwise == 0 && dClockwise > 0 ->  dClockwise--;
+													V(clockwise)
+	:: else -> V(mutex)
+	fi
+}
+
+inline P(X) {
+	atomic {X > 0 -> X = X - 1}
+}
+
+inline V(X) { 
+	X++
+}
+
 active [N] proctype Car()
 {
 	do
@@ -24,7 +43,7 @@ active [N] proctype Car()
 											P(counterClockwise)
 						fi;
 						nCounterClockwise++
-		:: _pid >= N/2 ->
+		:: else ->
 						if
 						:: nCounterClockwise > 0 ->
 											dClockwise++;
@@ -33,22 +52,12 @@ active [N] proctype Car()
 						fi;
 						nClockwise++
 		fi;
+		Signal();
+		P(mutex);
+		if
+		:: _pid < N/2 -> nCounterClockwise--
+		:: else -> nClockwise--;
+		fi;
 		Signal()
 	od
-}
-
-inline Signal() {
-	if
-	:: nClockwise == 0 && dCounterClockwise > 0 ->
-	:: nCounterClockwise == 0 && dClockwise > 0 ->
-	:: else -> 
-	fi
-}
-
-inline P(X) {
-	atomic {X > 0 -> X = X - 1}
-}
-
-inline V(X) { 
-	X++
 }
