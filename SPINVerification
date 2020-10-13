@@ -1,4 +1,4 @@
-#define N 8
+#define N 4
 
 int mutex = 1;
 int clockwise = 0;
@@ -23,7 +23,7 @@ inline Signal() {
 
 inline P(X) {
 	atomic {X > 0 -> X = X - 1}
-}
+} 
 
 inline V(X) { 
 	X++
@@ -32,32 +32,40 @@ inline V(X) {
 active [N] proctype Car()
 {
 	do
-	::
+	::	skip;  /* Dummy statement to allow label at entry point */
+
+entry:
 		P(mutex);
 		if
 		:: _pid < N/2 ->
-						if
+entry_1:				if
 						:: nClockwise > 0 ->
 											dCounterClockwise++;
 											V(mutex);
 											P(counterClockwise)
+						:: else ->
 						fi;
-						nCounterClockwise++
+crit_1:					nCounterClockwise++
 		:: else ->
-						if
+entry_2:				if
 						:: nCounterClockwise > 0 ->
 											dClockwise++;
 											V(mutex);
 											P(clockwise)
+						:: else ->
 						fi;
-						nClockwise++
+crit_2: 				nClockwise++
 		fi;
 		Signal();
 		P(mutex);
-		if
+crit:	if
 		:: _pid < N/2 -> nCounterClockwise--
 		:: else -> nClockwise--;
 		fi;
 		Signal()
 	od
 }
+
+ltl live {[] (Car[0]@entry -> <> Car[0]@crit)}
+//ltl fair {[] (Car[0]@entry_1 -> <> Car[0]@crit_1)}
+//ltl safety {[] (nClockwise == 0 || nCounterClockwise == 0)}
