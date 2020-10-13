@@ -38,8 +38,6 @@ public class Alley {
             }
 
             nCounterClockwise++;
-            signal();
-
         } else {
 
             if(nCounterClockwise > 0){
@@ -49,9 +47,8 @@ public class Alley {
             }
 
             nClockwise++;
-            signal();
-
         }
+        signal();
     }
 
     /* Register that car no. has left the alley */

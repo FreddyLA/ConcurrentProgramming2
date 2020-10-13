@@ -1,0 +1,54 @@
+#define N 8
+
+int mutex = 1;
+int clockwise = 0;
+int counterClockwise = 0;
+
+int nClockwise = 0;
+int nCounterClockwise = 0;
+
+int dClockwise = 0;
+int dCounterClockwise = 0;
+
+active [N] proctype Car()
+{
+	do
+	::
+		P(mutex);
+		if
+		:: _pid < N/2 ->
+						if
+						:: nClockwise > 0 ->
+											dCounterClockwise++;
+											V(mutex);
+											P(counterClockwise)
+						fi;
+						nCounterClockwise++
+		:: _pid >= N/2 ->
+						if
+						:: nCounterClockwise > 0 ->
+											dClockwise++;
+											V(mutex);
+											P(clockwise)
+						fi;
+						nClockwise++
+		fi;
+		Signal()
+	od
+}
+
+inline Signal() {
+	if
+	:: nClockwise == 0 && dCounterClockwise > 0 ->
+	:: nCounterClockwise == 0 && dClockwise > 0 ->
+	:: else -> 
+	fi
+}
+
+inline P(X) {
+	atomic {X > 0 -> X = X - 1}
+}
+
+inline V(X) { 
+	X++
+}
