@@ -38,23 +38,23 @@ entry:
 		P(mutex);
 		if
 		:: _pid < N/2 ->
-entry_1:				if
+entry1:					if
 						:: nClockwise > 0 ->
 											dCounterClockwise++;
 											V(mutex);
 											P(counterClockwise)
 						:: else ->
 						fi;
-crit_1:					nCounterClockwise++
+crit1:					nCounterClockwise++
 		:: else ->
-entry_2:				if
+entry2:	 				if
 						:: nCounterClockwise > 0 ->
 											dClockwise++;
 											V(mutex);
 											P(clockwise)
 						:: else ->
 						fi;
-crit_2: 				nClockwise++
+crit2: 					nClockwise++
 		fi;
 		Signal();
 		P(mutex);
@@ -66,6 +66,8 @@ crit:	if
 	od
 }
 
-ltl live {[] (Car[0]@entry -> <> Car[0]@crit)}
-//ltl fair {[] (Car[0]@entry_1 -> <> Car[0]@crit_1)}
+//ltl obl0 {[] ( (Car[0]@entry && [] !(Car[1]@entry)  && [] !(Car[2]@entry) && [] !(Car[3]@entry)) -> <> (Car[0]@crit) )}
+ltl res {[] ((Car[0]@entry || Car[1]@entry || Car[2]@entry || Car[3]@entry) -> <> (Car[0]@crit1 || Car[1]@crit1 || Car[2]@crit2 || Car[3]@crit2))}
+//ltl fair0 {[] (Car[0]@entry -> <> Car[0]@crit1)}
+//ltl fair2 {[] (Car[2]@entry -> <> Car[2]@crit2)}
 //ltl safety {[] (nClockwise == 0 || nCounterClockwise == 0)}
